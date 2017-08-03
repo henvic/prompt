@@ -69,8 +69,8 @@ func Prompt(param string) (string, error) {
 	value, err := reader.ReadString('\n')
 
 	// on Windows the line break is \r\n
-	// let's trim \r
-	value = strings.TrimPrefix(value, "\r")
+	// let's trim an extra line (\n, not \r)
+	value = strings.TrimRight(value, "\n")
 
 	if err != nil {
 		return "", errwrap.Wrapf("Can not read stdin for "+param+": {{err}}", err)
