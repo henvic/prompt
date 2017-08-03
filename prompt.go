@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 	"syscall"
@@ -68,9 +69,15 @@ func Prompt(param string) (string, error) {
 	reader := bufio.NewReader(inStream)
 	value, err := reader.ReadString('\n')
 
-	// on Windows the line break is \r\n
-	// let's trim an extra line (\n, not \r)
-	value = strings.TrimRight(value, "\n")
+	// two cases:
+	// on Unix: \n
+	// on Windows: \r\n
+	// remove line break
+	if runtime.GOOS == "windows" {
+		value = strings.TrimRight(value, "\r\n")
+	} else {
+		value = strings.TrimRight(value, "\n")
+	}
 
 	if err != nil {
 		return "", errwrap.Wrapf("Can not read stdin for "+param+": {{err}}", err)
